@@ -1,0 +1,661 @@
+{% extends "index.html" %} 
+{% block body %} 
+{% load static %}
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+  .required-asterisk {
+    color: #dc3545;
+    margin-left: 2px;
+  }
+
+  .error-message {
+    color: #dc3545;
+    display: none;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    font-weight: 400;
+  }
+
+  input:invalid {
+    border-color: initial;
+  }
+
+  .inter-font {
+    font-family: "Inter", sans-serif;
+  }
+
+  .form-container {
+    background: linear-gradient(135deg, #f6fafd 0%, #e8f2ff 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Floating background elements */
+  .floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .floating-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(
+      135deg,
+      rgba(9, 63, 117, 0.05),
+      rgba(9, 63, 117, 0.1)
+    );
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .floating-circle:nth-child(1) {
+    width: 80px;
+    height: 80px;
+    top: 15%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+
+  .floating-circle:nth-child(2) {
+    width: 60px;
+    height: 60px;
+    top: 70%;
+    right: 15%;
+    animation-delay: 3s;
+  }
+
+  .floating-circle:nth-child(3) {
+    width: 40px;
+    height: 40px;
+    bottom: 25%;
+    left: 85%;
+    animation-delay: 6s;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+      opacity: 0.3;
+    }
+    50% {
+      transform: translateY(-30px) rotate(180deg);
+      opacity: 0.6;
+    }
+  }
+
+  .registration-form {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(25px);
+    border-radius: 28px;
+    box-shadow: 0 25px 50px rgba(9, 63, 117, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 3rem;
+    margin: 2rem auto;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .registration-form::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #093f75, #0d5aa7, #1e6bb8);
+    border-radius: 28px 28px 0 0;
+  }
+
+  .form-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .form-title {
+    color: #093f75;
+    font-weight: 700;
+    font-size: 2.25rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #093f75, #0d5aa7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .form-subtitle {
+    color: #6c757d;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 0;
+  }
+
+  .form-label {
+    display: block;
+    font-weight: 600;
+    color: #093f75;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e8f2ff;
+    border-radius: 14px;
+    background: #f8fbff;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    box-shadow: 0 1px 3px rgba(9, 63, 117, 0.05);
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #093f75;
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(9, 63, 117, 0.12),
+      0 0 0 3px rgba(9, 63, 117, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .form-control:valid:not(:placeholder-shown) {
+    border-color: #28a745;
+    background: #f8fff8;
+  }
+
+  .form-control::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+  }
+
+  .form-input,
+  .form-select {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e8f2ff;
+    border-radius: 14px;
+    background: #f8fbff;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    box-shadow: 0 1px 3px rgba(9, 63, 117, 0.05);
+  }
+
+  .form-input:focus,
+  .form-select:focus {
+    outline: none;
+    border-color: #093f75;
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(9, 63, 117, 0.12),
+      0 0 0 3px rgba(9, 63, 117, 0.1);
+    transform: translateY(-1px);
+  }
+
+  input[type="file"].form-input {
+    padding: 14px 18px;
+    background-color: #f8fbff;
+    border: 2px solid #e8f2ff;
+    border-radius: 14px;
+    font-family: "Inter", sans-serif;
+    font-size: 0.95rem;
+    color: #093f75;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  input[type="file"].form-input:hover {
+    border-color: #093f75;
+    background-color: #ffffff;
+    box-shadow: 0 4px 16px rgba(9, 63, 117, 0.08);
+  }
+
+  input[type="file"].form-input::file-selector-button {
+    background: linear-gradient(135deg, #093f75, #0d5aa7);
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    font-family: "Inter", sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 12px;
+  }
+
+  input[type="file"].form-input::file-selector-button:hover {
+    background-color: #072f5c;
+  }
+  /* From Jobseeker TOS modal styles */
+/* From Jobseeker TOS modal styles */
+@keyframes modalIn {
+    from {
+        transform: translateY(-40px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: #093f75;
+    cursor: pointer;
+}
+
+.modal-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #093f75;
+    margin-bottom: 0.7rem;
+    text-align: center;
+}
+
+.modal-content {
+    font-size: 0.98rem;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Size adjustments */
+#termsOfServiceModal .modal-dialog {
+    max-width: 70vw; /* 70% width */
+}
+#termsOfServiceModal .modal-content {
+    height: 60vh;       /* 60% height */
+    overflow-y: auto;   /* scroll if needed */
+}
+.modal-body {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+
+
+
+</style>
+
+<div class="registration-form mx-auto col-md-8 col-lg-6 inter-font">
+  <div class="form-header">
+    <h1 class="form-title">Employer Registration</h1>
+    <p class="form-subtitle">
+      Create your account to post jobs and find talent.
+    </p>
+  </div>
+
+  {% if msg %}
+  <div class="alert alert-danger" role="alert">{{ msg }}</div>
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label class="form-label" for="companyName">
+        <i class="fas fa-building me-2"></i>Company Name
+        <span class="required-asterisk">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        id="companyName"
+        name="companyName"
+        autocomplete="organization"
+        placeholder="Enter your company's official name"
+        required
+      />
+      <div class="error-message">Company name is required.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="username">
+        <i class="fas fa-user-circle me-2"></i>Username
+        <span class="required-asterisk">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        id="username"
+        name="username"
+        autocomplete="username"
+        placeholder="Choose a unique username"
+        required
+      />
+      <div class="error-message">Username is required.</div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="password">
+          <i class="fas fa-lock me-2"></i>Password
+          <span class="required-asterisk">*</span>
+        </label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          name="password"
+          autocomplete="new-password"
+          placeholder="Enter your password"
+          required
+          minlength="8"
+        />
+        <div class="error-message">
+          Password is required and must be at least 8 characters.
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="confirmPassword">
+          <i class="fas fa-lock me-2"></i>Confirm Password
+          <span class="required-asterisk">*</span>
+        </label>
+        <input
+          type="password"
+          class="form-control"
+          id="confirmPassword"
+          name="confirmPassword"
+          autocomplete="new-password"
+          placeholder="Re-enter your password"
+          required
+        />
+        <div class="error-message">Passwords do not match.</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="email">
+        <i class="fas fa-envelope me-2"></i>Company Email
+        <span class="required-asterisk">*</span>
+      </label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        name="email"
+        autocomplete="email"
+        placeholder="Enter your company email"
+        required
+      />
+      <div class="error-message">A valid email address is required.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="phone">
+        <i class="fas fa-phone-alt me-2"></i>Contact Number
+        <span class="required-asterisk">*</span>
+      </label>
+      <input
+        type="tel"
+        class="form-control"
+        id="phone"
+        name="phone"
+        autocomplete="tel"
+        placeholder="Enter your contact number (e.g., +1234567890)"
+        required
+        pattern="^\+?\d{10,15}$"
+        title="Please enter a valid phone number (e.g., +1234567890)"
+      />
+      <div class="error-message">A valid contact number is required.</div>
+    </div>
+
+    <hr class="section-divider" />
+
+    <div class="form-group">
+      <label class="form-label" for="address">
+        <i class="fas fa-map-marker-alt me-2"></i>Company Address
+        <span class="required-asterisk">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        id="address"
+        name="address"
+        autocomplete="street-address"
+        placeholder="Enter your company's full address"
+        required
+      />
+      <div class="error-message">Company address is required.</div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="city">
+          <i class="fas fa-city me-2"></i>City
+          <span class="required-asterisk">*</span>
+        </label>
+        <input
+          type="text"
+          class="form-control"
+          id="city"
+          name="city"
+          autocomplete="address-level2"
+          placeholder="Enter city"
+          required
+        />
+        <div class="error-message">City is required.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="state">
+          <i class="fas fa-map-marked-alt me-2"></i>State
+          <span class="required-asterisk">*</span>
+        </label>
+        <input
+          type="text"
+          class="form-control"
+          id="state"
+          name="state"
+          autocomplete="address-level1"
+          placeholder="Enter state"
+          required
+        />
+        <div class="error-message">State is required.</div>
+      </div>
+      <div class="mb-3">
+        <label for="gstno" class="form-label">GST No.<span class="required-asterisk">*</span></label>
+        <input type="text" class="form-control" name="gstno" placeholder="Enter GST No." required>
+        <span class="error-message">GST number is required.</span>
+      </div>
+      
+    <!-- PAN Number -->
+    <div class="form-group">
+      <label class="form-label" for="panNo">
+        <i class="fas fa-id-badge me-2"></i>PAN Number
+        <span class="required-asterisk">*</span>
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        id="panNo"
+        name="panNo"
+        placeholder="ABCDE1234F"
+        pattern="[A-Z]{5}\d{4}[A-Z]"
+        style="text-transform: uppercase"
+        required
+      />
+      <div class="error-message">Please enter a valid PAN number.</div>
+    </div>
+
+    <div class="checkbox-container mb-4">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="termsCheckbox"
+        name="termsCheckbox"
+        required
+      />
+      <label class="form-check-label" for="termsCheckbox">
+        I agree to the <a href="#">Terms & Conditions</a> and
+        <a href="#">Privacy Policy</a>
+        <span class="required-asterisk">*</span>
+      </label>
+      <div class="error-message">
+        You must agree to the terms and conditions.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary w-100" style="background-color: #093f75; color:white;">Submit</button>
+    </div>
+    
+  </form>
+</div>
+
+{% if show_modal %}
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    var myModal = new bootstrap.Modal(
+      document.getElementById("registerSuccessModal"),
+      {
+        backdrop: "static",
+        keyboard: false,
+      }
+    );
+    myModal.show();
+  });
+</script>
+{% endif %}
+      </div>
+
+  </div>
+</div>
+<!-- Terms of Service Modal -->
+<div class="modal fade" id="termsOfServiceModal" tabindex="-1" aria-labelledby="termsOfServiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <button type="button" class="modal-close" data-bs-dismiss="modal">&times;</button>
+      <h5 class="modal-title" id="termsOfServiceModalLabel">Terms of Service</h5>
+      <div class="modal-body">
+       <div class="modal-content">
+                <ul style="padding-left: 1.2em;">
+                    <li>You must be at least 18 years old to use Dream Jobs.</li>
+                    <li>All information provided must be accurate and up to date.</li>
+                    <li>Do not share your account credentials with others.</li>
+                    <li>Dream Jobs is not responsible for third-party content or job listings.</li>
+                    <li>Any misuse of the platform may result in account suspension.</li>
+                    <li>Respect all users and employers on the platform.</li>
+                    <li>By using Dream Jobs, you agree to receive occasional emails and notifications.</li>
+                    <li>These terms may be updated at any time without prior notice.</li>
+                </ul>
+                <p style="margin-top:1em; color:#888; font-size:0.93em;">For more details, contact our support team.</p>
+            </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
+    const inputs = form.querySelectorAll(
+      "input[required], select[required], textarea[required]"
+    );
+  
+    const validateField = (input) => {
+      const errorDiv = input.parentElement.querySelector(".error-message");
+      let valid = true;
+  
+      if (!errorDiv) return true; // Skip if no error div
+  
+      // Checkbox
+      if (input.type === "checkbox") {
+        valid = input.checked;
+        errorDiv.style.display = valid ? "none" : "block";
+        return valid;
+      }
+  
+      // Password
+      if (input.id === "password") {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&_]).{8,}$/;
+        valid = regex.test(input.value.trim());
+        errorDiv.textContent = valid
+          ? ""
+          : "Password must be 8+ chars with uppercase, lowercase, number & special char.";
+        errorDiv.style.display = valid ? "none" : "block";
+        return valid;
+      }
+  
+      // Confirm password
+      if (input.id === "confirmPassword") {
+        const password = document.getElementById("password").value;
+        valid = input.value.trim() !== "" && input.value === password;
+        errorDiv.textContent = valid ? "" : "Passwords do not match.";
+        errorDiv.style.display = valid ? "none" : "block";
+        return valid;
+      }
+  
+      // Email
+      if (input.type === "email") {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        valid = regex.test(input.value.trim());
+        errorDiv.textContent = valid ? "" : "Enter a valid email address.";
+        errorDiv.style.display = valid ? "none" : "block";
+        return valid;
+      }
+  
+      // Phone
+      if (input.id === "phone") {
+        const regex = /^\+?\d{10,15}$/;
+        valid = regex.test(input.value.trim());
+        errorDiv.textContent = valid
+          ? ""
+          : "Please enter a valid contact number (e.g., +1234567890).";
+        errorDiv.style.display = valid ? "none" : "block";
+        return valid;
+      }
+  
+      // PAN
+      if (input.id === "panNo") {
+        const regex = /^[A-Z]{5}\d{4}[A-Z]$/;
+        valid = regex.test(input.value.trim().toUpperCase());
+        errorDiv.textContent = valid ? "" : "Please enter a valid PAN number.";
+        errorDiv.style.display = valid ? "none" : "block";
+        return valid;
+      }
+  
+      // Required check for all others
+      valid = input.value.trim() !== "";
+      errorDiv.style.display = valid ? "none" : "block";
+  
+      return valid;
+    };
+  
+    // Real-time validation
+    inputs.forEach((input) => {
+      input.addEventListener("input", () => validateField(input));
+      input.addEventListener("change", () => validateField(input));
+    });
+  
+    // Submit validation
+    form.addEventListener("submit", (e) => {
+      let valid = true;
+      inputs.forEach((input) => {
+        if (!validateField(input)) valid = false;
+      });
+      if (!valid) e.preventDefault();
+    });
+  });
+  </script>
+
+{% endblock body %}
